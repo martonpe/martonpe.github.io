@@ -1,35 +1,37 @@
-var scene = new THREE.Scene();
-var camera = new THREE.PerspectiveCamera(
-  75,
-  window.innerWidth / window.innerHeight,
-  0.1,
-  1000
-);
+let scene, camera, renderer, earth, column, earthBaseTexture;
 
-var renderer = new THREE.WebGLRenderer();
-renderer.setSize(window.innerWidth, window.innerHeight);
-document.body.appendChild(renderer.domElement);
+init().catch(function (err) {
+  console.error(err);
+});
 
-const hemiLight = new THREE.HemisphereLight(0xffffff, 0x444444);
-hemiLight.position.set(0, 20, 0);
-scene.add(hemiLight);
+async function init() {
+  scene = new THREE.Scene();
+  camera = new THREE.PerspectiveCamera(
+    75,
+    window.innerWidth / window.innerHeight,
+    0.1,
+    1000
+  );
 
-// const dirLight = new THREE.DirectionalLight(0xffffff);
-// dirLight.position.set(-3, 10, -10);
-// dirLight.castShadow = true;
-// dirLight.shadow.camera.top = 2;
-// dirLight.shadow.camera.bottom = -2;
-// dirLight.shadow.camera.left = -2;
-// dirLight.shadow.camera.right = 2;
-// dirLight.shadow.camera.near = 0.1;
-// dirLight.shadow.camera.far = 40;
-// scene.add(dirLight);
+  renderer = new THREE.WebGLRenderer();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  document.body.appendChild(renderer.domElement);
 
-var column, earth;
-const loader = new THREE.GLTFLoader();
+  const hemiLight = new THREE.HemisphereLight(0xffffff, 0x444444);
+  hemiLight.position.set(0, 20, 0);
+  scene.add(hemiLight);
 
-loader.load("column.glb", function (gltf) {
-  column = gltf.scene;
+  const gltfLoader = new THREE.GLTFLoader();
+  const textureLoader = new THREE.TextureLoader();
+
+  const [columnGLTF, earthGLTF, earthTexture] = await Promise.all([
+    gltfLoader.loadAsync("column.glb"),
+    gltfLoader.loadAsync("hole_earth.glb"),
+    textureLoader.loadAsync("base_color.jpeg"),
+  ]);
+
+  // Column
+  column = columnGLTF.scene;
 
   column.scale.set(10, 10, 10);
 
@@ -38,22 +40,19 @@ loader.load("column.glb", function (gltf) {
   column.position.z = 1;
 
   scene.add(column);
-});
 
-var earthBaseTexture, earthNormalTexture, earthMaterial;
-const textureLoader = new THREE.TextureLoader();
-textureLoader.load("base_color.jpeg", function (baseTexture) {
-  earthBaseTexture = baseTexture;
-  earthBaseTexture.wrapT = THREE.RepeatWrapping;
-  earthBaseTexture.repeat.y = 1;
+  // Earth material
+  earthTexture.wrapT = THREE.RepeatWrapping;
+  earthTexture.repeat.y = 1;
 
-  earthMaterial = new THREE.MeshPhongMaterial({
-    map: baseTexture,
+  earthBaseTexture = earthTexture;
+
+  const earthMaterial = new THREE.MeshPhongMaterial({
+    map: earthBaseTexture,
   });
-});
 
-loader.load("hole_earth.glb", function (gltf) {
-  earth = gltf.scene;
+  // Earth
+  earth = earthGLTF.scene;
 
   earth.traverse(function (object) {
     if (object.isMesh) object.material = earthMaterial;
@@ -65,12 +64,14 @@ loader.load("hole_earth.glb", function (gltf) {
   earth.position.x = -2;
 
   scene.add(earth);
-});
 
-camera.position.z = 5;
+  // Camera
+  camera.position.z = 5;
+
+  animate();
+}
 
 var t = 0;
-
 var animate = function () {
   requestAnimationFrame(animate);
 
@@ -95,5 +96,3 @@ var animate = function () {
 
   renderer.render(scene, camera);
 };
-
-animate();
