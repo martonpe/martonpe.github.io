@@ -1,4 +1,15 @@
-let scene, camera, renderer, earth, column, earthBaseTexture;
+let scene,
+  camera,
+  renderer,
+  clock,
+  mixer,
+  controls,
+  earth,
+  column,
+  earthBaseTexture,
+  totem,
+  totemBaseTexture,
+  moveForward;
 
 init().catch(function (err) {
   console.error(err);
@@ -12,6 +23,7 @@ async function init() {
     0.1,
     1000
   );
+  clock = new THREE.Clock();
 
   renderer = new THREE.WebGLRenderer();
   renderer.setSize(window.innerWidth, window.innerHeight);
@@ -24,11 +36,14 @@ async function init() {
   const gltfLoader = new THREE.GLTFLoader();
   const textureLoader = new THREE.TextureLoader();
 
-  const [columnGLTF, earthGLTF, earthTexture] = await Promise.all([
-    gltfLoader.loadAsync("column.glb"),
-    gltfLoader.loadAsync("hole_earth.glb"),
-    textureLoader.loadAsync("base_color.jpeg"),
-  ]);
+  const [columnGLTF, earthGLTF, earthTexture, totemGLTF, totemTexture] =
+    await Promise.all([
+      gltfLoader.loadAsync("column.glb"),
+      gltfLoader.loadAsync("hole_earth.glb"),
+      textureLoader.loadAsync("base_color.jpeg"),
+      gltfLoader.loadAsync("totem.glb"),
+      textureLoader.loadAsync("pattern.jpg"),
+    ]);
 
   // Column
   column = columnGLTF.scene;
@@ -65,8 +80,37 @@ async function init() {
 
   scene.add(earth);
 
-  // Camera
-  camera.position.z = 5;
+  // Totem
+  totem = totemGLTF.scene;
+
+  totemBaseTexture = totemTexture;
+  totemTexture.wrapT = THREE.RepeatWrapping;
+  totemTexture.wrapS = THREE.RepeatWrapping;
+  totemTexture.repeat.y = 10;
+  totemTexture.repeat.x = 10;
+
+  const totemMaterial = new THREE.MeshPhysicalMaterial({
+    map: totemTexture,
+  });
+
+  totem.traverse(function (object) {
+    if (object.isMesh) object.material = totemMaterial;
+  });
+
+  totem.scale.set(10, 10, 10);
+
+  totem.position.y = -30;
+  totem.position.z = -20;
+
+  mixer = new THREE.AnimationMixer(totem);
+
+  totemGLTF.animations.forEach((clip) => {
+    mixer.clipAction(clip).play();
+    console.log(clip);
+  });
+
+  scene.add(totem);
+
 
   animate();
 }
@@ -75,12 +119,15 @@ var t = 0;
 var animate = function () {
   requestAnimationFrame(animate);
 
+  var delta = clock.getDelta();
+  if (mixer) mixer.update(delta);
+
   column.rotation.y += 0.01;
 
   // earth.rotation.y += 0.001;
   earthBaseTexture.offset.y += -0.002;
 
-  t += 0.01;
+  totemBaseTexture.offset.y += -0.001;
 
   // camera.position.x = 10 * Math.cos(t) + 0;
   // camera.position.z = 10 * Math.sin(t) + 0;
