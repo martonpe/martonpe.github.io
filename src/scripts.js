@@ -28,7 +28,7 @@ scene.add(hemiLight);
 var column, earth;
 const loader = new THREE.GLTFLoader();
 
-loader.load("src/models/column.glb", function (gltf) {
+loader.load("column.glb", function (gltf) {
   column = gltf.scene;
 
   column.scale.set(10, 10, 10);
@@ -42,20 +42,17 @@ loader.load("src/models/column.glb", function (gltf) {
 
 var earthBaseTexture, earthNormalTexture, earthMaterial;
 const textureLoader = new THREE.TextureLoader();
-textureLoader.load(
-  "src/textures/earth/base_color.jpeg",
-  function (baseTexture) {
-    earthBaseTexture = baseTexture;
-    earthBaseTexture.wrapT = THREE.RepeatWrapping;
-    earthBaseTexture.repeat.y = 1;
+textureLoader.load("base_color.jpeg", function (baseTexture) {
+  earthBaseTexture = baseTexture;
+  earthBaseTexture.wrapT = THREE.RepeatWrapping;
+  earthBaseTexture.repeat.y = 1;
 
-    earthMaterial = new THREE.MeshPhongMaterial({
-      map: baseTexture,
-    });
-  }
-);
+  earthMaterial = new THREE.MeshPhongMaterial({
+    map: baseTexture,
+  });
+});
 
-loader.load("src/models/hole_earth.glb", function (gltf) {
+loader.load("hole_earth.glb", function (gltf) {
   earth = gltf.scene;
 
   earth.traverse(function (object) {
