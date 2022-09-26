@@ -5,7 +5,6 @@ let scene,
   mixer,
   controls,
   earth,
-  column,
   earthBaseTexture,
   totem,
   totemBaseTexture,
@@ -36,25 +35,12 @@ async function init() {
   const gltfLoader = new THREE.GLTFLoader();
   const textureLoader = new THREE.TextureLoader();
 
-  const [columnGLTF, earthGLTF, earthTexture, totemGLTF, totemTexture] =
-    await Promise.all([
-      gltfLoader.loadAsync("column.glb"),
-      gltfLoader.loadAsync("hole_earth.glb"),
-      textureLoader.loadAsync("base_color.jpeg"),
-      gltfLoader.loadAsync("totem.glb"),
-      textureLoader.loadAsync("pattern.jpg"),
-    ]);
-
-  // Column
-  column = columnGLTF.scene;
-
-  column.scale.set(10, 10, 10);
-
-  column.position.x = 5;
-  column.position.y = -1.5;
-  column.position.z = 1;
-
-  scene.add(column);
+  const [earthGLTF, earthTexture, totemGLTF, totemTexture] = await Promise.all([
+    gltfLoader.loadAsync("hole_earth.glb"),
+    textureLoader.loadAsync("base_color.jpeg"),
+    gltfLoader.loadAsync("totem.glb"),
+    textureLoader.loadAsync("pattern.jpg"),
+  ]);
 
   // Earth material
   earthTexture.wrapT = THREE.RepeatWrapping;
@@ -73,10 +59,8 @@ async function init() {
     if (object.isMesh) object.material = earthMaterial;
   });
 
-  earth.scale.set(0.5, 0.5, 0.5);
-
-  earth.rotation.y = -1;
-  earth.position.x = -2;
+  earth.position.x = 0;
+  earth.position.z = -30;
 
   scene.add(earth);
 
@@ -97,10 +81,12 @@ async function init() {
     if (object.isMesh) object.material = totemMaterial;
   });
 
-  totem.scale.set(10, 10, 10);
+  totem.scale.set(40, 40, 40);
 
   totem.position.y = -30;
-  totem.position.z = -20;
+  totem.position.z = -50;
+
+  totem.visible = false;
 
   mixer = new THREE.AnimationMixer(totem);
 
@@ -110,6 +96,17 @@ async function init() {
   });
 
   scene.add(totem);
+
+  // Video link
+
+  video = document.getElementById("dream-video");
+  const texture = new THREE.VideoTexture(video);
+  const mesh = new THREE.Mesh(
+    new THREE.PlaneGeometry(200, 200),
+    new THREE.MeshPhongMaterial({ map: texture })
+  );
+  mesh.position.z = -300;
+  // scene.add(mesh);
 
   // Controls
   controls = new THREE.PointerLockControls(camera, renderer.domElement);
@@ -159,28 +156,37 @@ async function init() {
 }
 
 var t = 0;
+var cameraSpeed = 5;
 var animate = function () {
   requestAnimationFrame(animate);
 
   var delta = clock.getDelta();
   if (mixer) mixer.update(delta);
 
-  column.rotation.y += 0.01;
-
-  earthBaseTexture.offset.y += -0.002;
+  earthBaseTexture.offset.y += -0.00001 * t;
 
   totemBaseTexture.offset.y += -0.001;
 
-  if (moveForward) t += 0.01;
+  if (moveForward) t += 1;
 
-  camera.position.x = 20 * Math.cos(t) + 0;
-  camera.position.z = -5 * t;
-  camera.position.y = 20 * Math.cos(t / 4) + 0;
+  earth.rotation.y = lerp(0, -1.5, t / 500);
+  earth.rotation.z = lerp(1.5, 0, t / 500);
 
+  if (t > 610) {
+    camera.position.x = 20 * Math.sin(0.01 * t) + 0;
+    camera.position.y = 20 * Math.sin((0.01 * t) / 4) + 0;
+    totem.visible = true;
+    cameraSpeed = 15;
+  }
+
+  camera.position.z = -cameraSpeed * t * 0.01;
+
+  console.log(t);
+
+  // TODO: add portfolio videos page
+  // TODO: add link to portfolio videos page (to end of scroll)
   // TODO: add sounds
   // TODO: add click effects
-  // TODO: add portfolio videos (to end of scroll)
-  // TODO: add windows error video cube
 
   renderer.render(scene, camera);
 };
@@ -190,4 +196,8 @@ function onWindowResize() {
   camera.updateProjectionMatrix();
 
   renderer.setSize(window.innerWidth, window.innerHeight);
+}
+
+function lerp(x, y, a) {
+  return (1 - a) * x + a * y;
 }
