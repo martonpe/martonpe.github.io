@@ -111,6 +111,49 @@ async function init() {
 
   scene.add(totem);
 
+  // Controls
+  controls = new THREE.PointerLockControls(camera, renderer.domElement);
+
+  const blocker = document.getElementById("blocker");
+  const instructions = document.getElementById("instructions");
+
+  instructions.addEventListener("click", function () {
+    controls.lock();
+  });
+
+  controls.addEventListener("lock", function () {
+    instructions.style.display = "none";
+    blocker.style.display = "none";
+  });
+
+  controls.addEventListener("unlock", function () {
+    blocker.style.display = "block";
+    instructions.style.display = "";
+  });
+
+  const onKeyDown = function (event) {
+    switch (event.code) {
+      case "ArrowUp":
+      case "KeyW":
+        moveForward = true;
+        break;
+    }
+  };
+
+  const onKeyUp = function (event) {
+    switch (event.code) {
+      case "ArrowUp":
+      case "KeyW":
+        moveForward = false;
+        break;
+    }
+  };
+
+  document.addEventListener("keydown", onKeyDown);
+  document.addEventListener("keyup", onKeyUp);
+  scene.add(controls.getObject());
+
+  window.addEventListener("resize", onWindowResize, false);
 
   animate();
 }
@@ -124,22 +167,27 @@ var animate = function () {
 
   column.rotation.y += 0.01;
 
-  // earth.rotation.y += 0.001;
   earthBaseTexture.offset.y += -0.002;
 
   totemBaseTexture.offset.y += -0.001;
 
-  // camera.position.x = 10 * Math.cos(t) + 0;
-  // camera.position.z = 10 * Math.sin(t) + 0;
-  // camera.position.y = 2 * Math.sin(t / 4) + 0;
-  // camera.rotation.y = -t + 1;
+  if (moveForward) t += 0.01;
 
-  // TODO: add head model
-  // TODO: scroll to move camera and show other model
-  // TODO: add speed up and sound on earth click
-  // TODO: add sounds and eye pop to head model
+  camera.position.x = 20 * Math.cos(t) + 0;
+  camera.position.z = -5 * t;
+  camera.position.y = 20 * Math.cos(t / 4) + 0;
+
+  // TODO: add sounds
+  // TODO: add click effects
   // TODO: add portfolio videos (to end of scroll)
-  // TODO: add link to portfolio
+  // TODO: add windows error video cube
 
   renderer.render(scene, camera);
 };
+
+function onWindowResize() {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+
+  renderer.setSize(window.innerWidth, window.innerHeight);
+}
