@@ -230,7 +230,7 @@ function onClick() {
   var intersects = raycaster.intersectObject(scene, true);
 
   if ((intersects.length > 0 && intersects[0].object === text) || t > 1840) {
-    window.location.href = "/videos.html";
+    window.location.href = "/portfolio.html";
   }
 }
 
