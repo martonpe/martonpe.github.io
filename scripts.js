@@ -1,13 +1,14 @@
 let scene,
   camera,
   renderer,
-  clock,
-  mixer,
   controls,
+  raycaster,
+  mouse,
   earth,
   earthBaseTexture,
   totem,
   totemBaseTexture,
+  text,
   moveForward;
 
 init().catch(function (err) {
@@ -22,7 +23,6 @@ async function init() {
     0.1,
     1000
   );
-  clock = new THREE.Clock();
 
   renderer = new THREE.WebGLRenderer();
   renderer.setSize(window.innerWidth, window.innerHeight);
@@ -32,15 +32,21 @@ async function init() {
   hemiLight.position.set(0, 20, 0);
   scene.add(hemiLight);
 
+  raycaster = new THREE.Raycaster();
+  mouse = new THREE.Vector2();
+
   const gltfLoader = new THREE.GLTFLoader();
   const textureLoader = new THREE.TextureLoader();
+  const fontLoader = new THREE.FontLoader();
 
-  const [earthGLTF, earthTexture, totemGLTF, totemTexture] = await Promise.all([
-    gltfLoader.loadAsync("hole_earth.glb"),
-    textureLoader.loadAsync("base_color.jpeg"),
-    gltfLoader.loadAsync("totem.glb"),
-    textureLoader.loadAsync("pattern.jpg"),
-  ]);
+  const [earthGLTF, earthTexture, totemGLTF, totemTexture, font] =
+    await Promise.all([
+      gltfLoader.loadAsync("hole_earth.glb"),
+      textureLoader.loadAsync("base_color.jpeg"),
+      gltfLoader.loadAsync("totem.glb"),
+      textureLoader.loadAsync("pattern.jpg"),
+      fontLoader.loadAsync("helvetiker_regular.typeface.json"),
+    ]);
 
   // Earth material
   earthTexture.wrapT = THREE.RepeatWrapping;
@@ -88,25 +94,30 @@ async function init() {
 
   totem.visible = false;
 
-  mixer = new THREE.AnimationMixer(totem);
-
-  totemGLTF.animations.forEach((clip) => {
-    mixer.clipAction(clip).play();
-    console.log(clip);
-  });
-
   scene.add(totem);
 
   // Video link
+  const textGeometry = new THREE.TextGeometry("Click me!", {
+    font: font,
+    size: 30,
+    height: 5,
+    curveSegments: 12,
+    bevelEnabled: true,
+    bevelThickness: 2,
+    bevelSize: 1.5,
+    bevelOffset: 0,
+    bevelSegments: 5,
+  });
 
-  video = document.getElementById("dream-video");
-  const texture = new THREE.VideoTexture(video);
-  const mesh = new THREE.Mesh(
-    new THREE.PlaneGeometry(200, 200),
-    new THREE.MeshPhongMaterial({ map: texture })
+  text = new THREE.Mesh(
+    textGeometry,
+    new THREE.MeshPhongMaterial({ color: 0xbbbbbb })
   );
-  mesh.position.z = -300;
-  // scene.add(mesh);
+  text.position.z = -340;
+  text.position.y = -20;
+  text.position.x = -92;
+  text.visible = false;
+  scene.add(text);
 
   // Controls
   controls = new THREE.PointerLockControls(camera, renderer.domElement);
@@ -152,16 +163,44 @@ async function init() {
 
   window.addEventListener("resize", onWindowResize, false);
 
+  renderer.domElement.addEventListener("click", onClick, false);
+  window.addEventListener("mousemove", onPointerMove, false);
+
   animate();
 }
 
-var t = 0;
-var cameraSpeed = 5;
-var animate = function () {
-  requestAnimationFrame(animate);
+function onClick() {
+  event.preventDefault();
 
-  var delta = clock.getDelta();
-  if (mixer) mixer.update(delta);
+  raycaster.setFromCamera(mouse, camera);
+
+  var intersects = raycaster.intersectObject(scene, true);
+
+  if (intersects.length > 0 && intersects[0].object === text) {
+    window.location.href = "/videos.html";
+  }
+}
+
+function onPointerMove() {
+  mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+  mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+}
+
+function hoverLink() {
+  text.material.color.set(0xbbbbbb);
+  raycaster.setFromCamera(mouse, camera);
+
+  var intersects = raycaster.intersectObject(scene, true);
+
+  if (intersects.length > 0 && intersects[0].object === text) {
+    text.material.color.set(0x00ffff);
+  }
+}
+
+var t = 1840;
+var cameraSpeed = 5;
+function animate() {
+  requestAnimationFrame(animate);
 
   earthBaseTexture.offset.y += -0.00001 * t;
 
@@ -172,10 +211,11 @@ var animate = function () {
   earth.rotation.y = lerp(0, -1.5, t / 500);
   earth.rotation.z = lerp(1.5, 0, t / 500);
 
-  if (t > 610) {
+  if (t > 600) {
     camera.position.x = 20 * Math.sin(0.01 * t) + 0;
     camera.position.y = 20 * Math.sin((0.01 * t) / 4) + 0;
     totem.visible = true;
+    text.visible = true;
     cameraSpeed = 15;
   }
 
@@ -183,13 +223,21 @@ var animate = function () {
 
   console.log(t);
 
-  // TODO: add portfolio videos page
-  // TODO: add link to portfolio videos page (to end of scroll)
-  // TODO: add sounds
+  if (t > 1830) {
+    hoverLink();
+  }
+
+  // TODO: add sounds:
+  // suck sound louder till 600
+  // suck sound at 600
+  // ear ringing from 600
+  // don't stop now, keep going from 1200
+  // click it, click the link from 1840
+
   // TODO: add click effects
 
   renderer.render(scene, camera);
-};
+}
 
 function onWindowResize() {
   camera.aspect = window.innerWidth / window.innerHeight;

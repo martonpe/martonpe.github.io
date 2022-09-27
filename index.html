@@ -2,11 +2,15 @@
 	<head>
 		<title>Peter's Portfolio</title>
 		<style>
+			body {
+				margin: 0;
+			}
+			
 			#blocker {
 				position: absolute;
 				width: 100%;
 				height: 100%;
-				background-color: rgba(0,0,0,0.5);
+                background: rgba(0, 0, 0, 0.5)
 			}
 
 			#instructions {
@@ -19,30 +23,39 @@
 				align-items: center;
 
 				text-align: center;
-				font-size: 36px;
+				font-size: 100px;
 				cursor: pointer;
 
-				color: aliceblue
+				color: #bbbbbb;
+			}
+
+			h1 {
+				font-size: 200px;
+			}
+
+			p {
+				
 			}
 		</style>
 	</head>
 	<body>
 		<div id="blocker">
 			<div id="instructions">
-				<p style="font-size:100px">
+				<h1>
 					Click to play
-				</p>
+				</h1>
 				<p>
-					Move forward in life: W<br/>
+					Move: W<br/>
 					Look: MOUSE<br/>
-					Touch: Don't touch, it's ART!
 				</p>
 			</div>
 		</div>
 
 		<script src="https://cdn.jsdelivr.net/npm/three@0.138.3/build/three.min.js"></script>
 		<script src="https://cdn.jsdelivr.net/npm/three@0.138.3/examples/js/loaders/GLTFLoader.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/three@0.138.3/examples/js/loaders/FontLoader.min.js"></script>
 		<script src="https://cdn.jsdelivr.net/npm/three@0.138.3/examples/js/controls/PointerLockControls.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/three@0.138.3/examples/js/geometries/TextGeometry.min.js"></script>
 
 		<script type="module" src="/scripts.js"></script>
 	</body>
