@@ -229,7 +229,7 @@ function onClick() {
 
   var intersects = raycaster.intersectObject(scene, true);
 
-  if (intersects.length > 0 && intersects[0].object === text) {
+  if ((intersects.length > 0 && intersects[0].object === text) || t > 1840) {
     window.location.href = "/videos.html";
   }
 }
@@ -294,9 +294,7 @@ function animate() {
 
   camera.position.z = -cameraSpeed * t * 0.01;
 
-  console.log(t);
-
-  if (t > 1830) {
+  if (t > 1700) {
     hoverLink();
   }
 
