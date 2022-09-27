@@ -9,7 +9,15 @@ let scene,
   totem,
   totemBaseTexture,
   text,
-  moveForward;
+  moveForward,
+  spinBuffer,
+  ringBuffer,
+  stopBuffer,
+  clickBuffer,
+  spinSound,
+  ringSound,
+  stopSound,
+  clickSound;
 
 init().catch(function (err) {
   console.error(err);
@@ -38,15 +46,31 @@ async function init() {
   const gltfLoader = new THREE.GLTFLoader();
   const textureLoader = new THREE.TextureLoader();
   const fontLoader = new THREE.FontLoader();
+  const audioLoader = new THREE.AudioLoader();
 
-  const [earthGLTF, earthTexture, totemGLTF, totemTexture, font] =
-    await Promise.all([
-      gltfLoader.loadAsync("hole_earth.glb"),
-      textureLoader.loadAsync("base_color.jpeg"),
-      gltfLoader.loadAsync("totem.glb"),
-      textureLoader.loadAsync("pattern.jpg"),
-      fontLoader.loadAsync("helvetiker_regular.typeface.json"),
-    ]);
+  var earthGLTF, earthTexture, totemGLTF, totemTexture, font;
+
+  [
+    earthGLTF,
+    earthTexture,
+    totemGLTF,
+    totemTexture,
+    font,
+    spinBuffer,
+    ringBuffer,
+    stopBuffer,
+    clickBuffer,
+  ] = await Promise.all([
+    gltfLoader.loadAsync("hole_earth.glb"),
+    textureLoader.loadAsync("base_color.jpeg"),
+    gltfLoader.loadAsync("totem.glb"),
+    textureLoader.loadAsync("pattern.jpg"),
+    fontLoader.loadAsync("helvetiker_regular.typeface.json"),
+    audioLoader.loadAsync("spin.mp3"),
+    audioLoader.loadAsync("ring.mp3"),
+    audioLoader.loadAsync("stop.mp3"),
+    audioLoader.loadAsync("click.mp3"),
+  ]);
 
   // Earth material
   earthTexture.wrapT = THREE.RepeatWrapping;
@@ -127,6 +151,12 @@ async function init() {
 
   instructions.addEventListener("click", function () {
     controls.lock();
+
+    if (spinSound === undefined) {
+      initSounds();
+    }
+
+    animate();
   });
 
   controls.addEventListener("lock", function () {
@@ -166,7 +196,30 @@ async function init() {
   renderer.domElement.addEventListener("click", onClick, false);
   window.addEventListener("mousemove", onPointerMove, false);
 
-  animate();
+  // animate();
+}
+
+function initSounds() {
+  const listener = new THREE.AudioListener();
+  camera.add(listener);
+
+  spinSound = new THREE.Audio(listener);
+  spinSound.setBuffer(spinBuffer);
+  spinSound.setLoop(true);
+  spinSound.setVolume(0.1);
+
+  ringSound = new THREE.Audio(listener);
+  ringSound.setBuffer(ringBuffer);
+  ringSound.setVolume(0.3);
+  ringSound.setLoop(true);
+
+  stopSound = new THREE.Audio(listener);
+  stopSound.setBuffer(stopBuffer);
+  stopSound.setLoop(true);
+
+  clickSound = new THREE.Audio(listener);
+  clickSound.setBuffer(clickBuffer);
+  clickSound.setLoop(true);
 }
 
 function onClick() {
@@ -197,7 +250,7 @@ function hoverLink() {
   }
 }
 
-var t = 1840;
+var t = 0;
 var cameraSpeed = 5;
 function animate() {
   requestAnimationFrame(animate);
@@ -211,12 +264,32 @@ function animate() {
   earth.rotation.y = lerp(0, -1.5, t / 500);
   earth.rotation.z = lerp(1.5, 0, t / 500);
 
+  if (t < 600) {
+    spinSound.play();
+    spinSound.setPlaybackRate(lerp(0.01, 3, t / 500));
+    spinSound.setVolume(lerp(0.1, 1, t / 600));
+  }
+
   if (t > 600) {
     camera.position.x = 20 * Math.sin(0.01 * t) + 0;
     camera.position.y = 20 * Math.sin((0.01 * t) / 4) + 0;
     totem.visible = true;
     text.visible = true;
     cameraSpeed = 15;
+  }
+
+  if (t == 600) {
+    spinSound.stop();
+    ringSound.play();
+  }
+
+  if (t == 1200) {
+    stopSound.play();
+  }
+
+  if (t == 1840) {
+    stopSound.stop();
+    clickSound.play();
   }
 
   camera.position.z = -cameraSpeed * t * 0.01;
@@ -227,14 +300,7 @@ function animate() {
     hoverLink();
   }
 
-  // TODO: add sounds:
-  // suck sound louder till 600
-  // suck sound at 600
-  // ear ringing from 600
-  // don't stop now, keep going from 1200
-  // click it, click the link from 1840
-
-  // TODO: add click effects
+  // TODO: center camera on mouse cursor
 
   renderer.render(scene, camera);
 }
