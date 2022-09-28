@@ -5,9 +5,9 @@ let scene,
   raycaster,
   mouse,
   earth,
-  earthBaseTexture,
+  earthTexture,
   totem,
-  totemBaseTexture,
+  totemTexture,
   text,
   moveForward,
   spinBuffer,
@@ -48,7 +48,7 @@ async function init() {
   const fontLoader = new THREE.FontLoader();
   const audioLoader = new THREE.AudioLoader();
 
-  var earthGLTF, earthTexture, totemGLTF, totemTexture, font;
+  let earthGLTF, totemGLTF, font;
 
   [
     earthGLTF,
@@ -72,17 +72,14 @@ async function init() {
     audioLoader.loadAsync("click.mp3"),
   ]);
 
-  // Earth material
+  // Earth
   earthTexture.wrapT = THREE.RepeatWrapping;
   earthTexture.repeat.y = 1;
 
-  earthBaseTexture = earthTexture;
-
   const earthMaterial = new THREE.MeshPhongMaterial({
-    map: earthBaseTexture,
+    map: earthTexture,
   });
 
-  // Earth
   earth = earthGLTF.scene;
 
   earth.traverse(function (object) {
@@ -97,7 +94,6 @@ async function init() {
   // Totem
   totem = totemGLTF.scene;
 
-  totemBaseTexture = totemTexture;
   totemTexture.wrapT = THREE.RepeatWrapping;
   totemTexture.wrapS = THREE.RepeatWrapping;
   totemTexture.repeat.y = 10;
@@ -152,11 +148,9 @@ async function init() {
   instructions.addEventListener("click", function () {
     controls.lock();
 
-    if (spinSound === undefined) {
+    if (!spinSound) {
       initSounds();
     }
-
-    animate();
   });
 
   controls.addEventListener("lock", function () {
@@ -196,7 +190,7 @@ async function init() {
   renderer.domElement.addEventListener("click", onClick, false);
   window.addEventListener("mousemove", onPointerMove, false);
 
-  // animate();
+  animate();
 }
 
 function initSounds() {
@@ -207,6 +201,7 @@ function initSounds() {
   spinSound.setBuffer(spinBuffer);
   spinSound.setLoop(true);
   spinSound.setVolume(0.1);
+  spinSound.play();
 
   ringSound = new THREE.Audio(listener);
   ringSound.setBuffer(ringBuffer);
@@ -227,7 +222,7 @@ function onClick() {
 
   raycaster.setFromCamera(mouse, camera);
 
-  var intersects = raycaster.intersectObject(scene, true);
+  const intersects = raycaster.intersectObject(scene, true);
 
   if ((intersects.length > 0 && intersects[0].object === text) || t > 1840) {
     window.location.href = "/portfolio.html";
@@ -243,29 +238,27 @@ function hoverLink() {
   text.material.color.set(0xbbbbbb);
   raycaster.setFromCamera(mouse, camera);
 
-  var intersects = raycaster.intersectObject(scene, true);
+  const intersects = raycaster.intersectObject(scene, true);
 
   if (intersects.length > 0 && intersects[0].object === text) {
     text.material.color.set(0x00ffff);
   }
 }
 
-var t = 0;
-var cameraSpeed = 5;
+let t = 0;
+let cameraSpeed = 5;
 function animate() {
   requestAnimationFrame(animate);
 
-  earthBaseTexture.offset.y += -0.00001 * t;
-
-  totemBaseTexture.offset.y += -0.001;
+  earthTexture.offset.y += -0.00001 * t;
+  totemTexture.offset.y += -0.001;
 
   if (moveForward) t += 1;
 
   earth.rotation.y = lerp(0, -1.5, t / 500);
   earth.rotation.z = lerp(1.5, 0, t / 500);
 
-  if (t < 600) {
-    spinSound.play();
+  if (t < 600 && spinSound) {
     spinSound.setPlaybackRate(lerp(0.01, 3, t / 500));
     spinSound.setVolume(lerp(0.1, 1, t / 600));
   }
