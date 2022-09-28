@@ -1,12 +1,8 @@
-# Three.js boilerplate
-This is a simple three.js boilerplate for new projects, feel free to contribute!
+# martonpe.github.io
 
-### Setup
-Run the setup script to make the repository your own!
+A werid little 3D audio-visual easter egg hunt for my portfolio.
 
-```bash
-$ ./setup
-```
+### Run locally
 
 Install dependencies and start your engines! This ships with a simple express.js server so we can run three.js properly without cross-origin issues.
 
@@ -15,4 +11,4 @@ $ npm install
 $ npm run start
 ```
 
-Open http://localhost:8080 to view your project.
+Open http://localhost:8080 to view.
