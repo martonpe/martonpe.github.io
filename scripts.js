@@ -61,15 +61,15 @@ async function init() {
     stopBuffer,
     clickBuffer,
   ] = await Promise.all([
-    gltfLoader.loadAsync("hole_earth.glb"),
-    textureLoader.loadAsync("base_color.jpeg"),
-    gltfLoader.loadAsync("totem.glb"),
-    textureLoader.loadAsync("pattern.jpg"),
-    fontLoader.loadAsync("helvetiker_regular.typeface.json"),
-    audioLoader.loadAsync("spin.mp3"),
-    audioLoader.loadAsync("ring.mp3"),
-    audioLoader.loadAsync("stop.mp3"),
-    audioLoader.loadAsync("click.mp3"),
+    gltfLoader.loadAsync("assets/models/hole_earth.glb"),
+    textureLoader.loadAsync("assets/textures/base_color.jpeg"),
+    gltfLoader.loadAsync("assets/models/totem.glb"),
+    textureLoader.loadAsync("assets/textures/pattern.jpg"),
+    fontLoader.loadAsync("assets/fonts/helvetiker_regular.typeface.json"),
+    audioLoader.loadAsync("assets/sounds/spin.mp3"),
+    audioLoader.loadAsync("assets/sounds/ring.mp3"),
+    audioLoader.loadAsync("assets/sounds/stop.mp3"),
+    audioLoader.loadAsync("assets/sounds/click.mp3"),
   ]);
 
   // Earth
