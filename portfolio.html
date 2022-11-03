@@ -33,6 +33,8 @@
 
             .flex-container {
                 display: flex;
+                flex-direction: row;
+                padding-bottom: 150px;
             }
             
             .flex-child {
@@ -62,9 +64,23 @@
             }
 
             .text-container {
-                position: absolute;
-                top: 50%;
-                transform: translate(0, -50%) 
+              position: relative;
+            }
+
+            @media (max-width: 1800px) {
+                .flex-container {
+                    flex-direction: column;
+                }  
+                
+                iframe {
+                    margin-right: auto;
+                }
+            }
+            @media (min-width: 1800px) {
+                .text-container {
+                    top: 50%;
+                    transform: translateY(-50%);
+                }
             }
 		</style>
 	</head>
