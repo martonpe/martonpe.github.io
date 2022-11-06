@@ -1,7 +1,7 @@
 function setup() {
   createCanvas(windowWidth, windowHeight);
   textFont("Arial", 50);
-  textStyle(NORMAL);
+  textStyle(BOLD);
   textAlign(CENTER, CENTER);
   frameRate(4);
 
@@ -20,12 +20,10 @@ function setup() {
   };
   scalar = 325 * scle;
   wasBond = false;
+  colors = ["#FF0000", "#51ff00", "#eeff00", "#00eeff", "#9900ff"];
 }
 
 function draw() {
-  //   if (offsetX > width || offsetY > height) {
-  //     return;
-  //   }
   if (wasBond || random() > 0.2) {
     wasBond = false;
     hexagon(offsets.x1, offsets.y1, scle);
@@ -57,21 +55,20 @@ function draw() {
 function horizontalBond(transX, transY, s) {
   shuffledLetters = letters.sort(() => 0.5 - random());
 
-  fill(random(255), random(255), random(255));
+  fill(random(colors));
   stroke(0);
   strokeWeight(5);
   push();
   translate(transX, transY);
   scale(s);
+
   line(-150, 0, -60, 0);
-  // text(shuffledLetters[0], 75, -130);
-
   line(10, -30, 75 - 15, -130 + 30);
-  random() > 0 ? text(shuffledLetters[1], 75, -140) : null;
-
   line(10, 30, 75 - 15, 130 - 30);
-  random() > 0 ? text(shuffledLetters[2], 75, 140) : null;
 
+  strokeWeight(2);
+  random() > 0 ? text(shuffledLetters[2], 75, 140) : null;
+  random() > 0 ? text(shuffledLetters[1], 75, -140) : null;
   text(shuffledLetters[3], -20, 0);
   pop();
 }
@@ -79,7 +76,7 @@ function horizontalBond(transX, transY, s) {
 function hexagon(transX, transY, s) {
   shuffledLetters = letters.sort(() => 0.5 - random());
 
-  fill(random(255), random(255), random(255));
+  fill(random(colors));
   stroke(0);
   strokeWeight(5);
   push();
@@ -91,21 +88,22 @@ function hexagon(transX, transY, s) {
   topDouble ? line(-75, -130, 45, -130) : null;
   rightSingle = random() > 0.4;
   rightSingle ? line(75 + 15, -130 + 30, 150, 0) : null;
-  topDouble || rightSingle ? text(shuffledLetters[0], 75, -130) : null;
 
   rightDouble = random() > 0.4;
   rightDouble ? line(150, 0, 75 + 18, 130 - 30) : null;
   rightDouble && random() > 0.7 ? line(123, 0, 68, 95) : null; //rand
   bottomSingle = random() > 0.2;
   bottomSingle ? line(45, 130, -75, 130) : null;
-  rightDouble || bottomSingle ? text(shuffledLetters[1], 75, 130) : null;
 
   leftDouble = random() > 0.4;
   leftDouble ? line(-75, 130, -150 + 15, 0 + 30) : null;
   leftDouble && random() > 0.7 ? line(-65, 100, -122, 0) : null; //rand
   bottomSingle = random() > 0.4;
   bottomSingle ? line(-150 + 15, 0 - 30, -75, -130) : null;
+
+  strokeWeight(1);
+  topDouble || rightSingle ? text(shuffledLetters[0], 75, -130) : null;
+  rightDouble || bottomSingle ? text(shuffledLetters[1], 75, 130) : null;
   bottomSingle || leftDouble ? text(shuffledLetters[2], -150, 0) : null;
-  // line(-150, 0, -75, -130);
   pop();
 }
