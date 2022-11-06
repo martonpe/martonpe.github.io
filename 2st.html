@@ -15,15 +15,15 @@
 			
 			body {
 				margin: 0;
-				
 			}
 
 			#container {
 				width: 90%;
 				max-width: 1600px;
 				position: absolute;
+				top: 50%;
   				left: 50%;
-				transform: translate(-50%, -0%);
+				transform: translate(-50%, -50%);
 				text-align: center;
 			}
 
@@ -32,8 +32,7 @@
 				margin: 100px 0;
 				font-family: 'Technodelight';
 				font-size: 100px;
-				
-
+				text-shadow: 5px 5px 5px #FF0000, 10px 10px 10px #51ff00, -5px -5px 5px #eeff00, -10px -10px 15px #00eeff, 15px 15px 40px #9900ff;
 				text-align: center;
 			}
 
@@ -44,6 +43,11 @@
 
 			p {
 				margin: 100px 0;
+				text-shadow: 5px 5px #FF0000, -1px -1px 4px #eeff00
+			}
+
+			iframe {
+				box-shadow:  -15px -15px 40px #eeff00, 15px 15px 40px #9900ff
 			}
 		</style>
 	</head>
@@ -63,6 +67,6 @@
 		</div>
 
 		<script src="https://cdn.jsdelivr.net/npm/p5@1.5.0/lib/p5.js"></script>
-		<script src="/2st-spiral.js"></script>
+		<script src="/2st-chemicals.js"></script>
 	</body>
 </html>
