@@ -1,5 +1,5 @@
 function setup() {
-  createCanvas(windowWidth, windowHeight);
+  createCanvas(document.body.scrollWidth, document.body.scrollHeight);
   textFont("Arial", 50);
   textStyle(BOLD);
   textAlign(CENTER, CENTER);
@@ -50,6 +50,10 @@ function draw() {
   shuffledDirections = directions.sort(() => 0.5 - random());
   offsets.x4 = offsets.x4 + shuffledDirections[0] * scalar;
   offsets.y4 = offsets.y4 + shuffledDirections[1] * scalar;
+
+  var difX = abs(mouseX - pmouseX);
+  var difY = abs(mouseY - pmouseY);
+  var vel = floor(difX + difY);
 }
 
 function horizontalBond(transX, transY, s) {
