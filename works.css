@@ -1,0 +1,117 @@
+@font-face {
+    font-family: 'Futura'; /*a name to be used later*/
+    src: url('/assets/fonts/futura.ttf'); /*URL to font*/
+}
+@font-face {
+    font-family: 'Futura Medium'; /*a name to be used later*/
+    src: url('/assets/fonts/futura-medium.ttf'); /*URL to font*/
+}
+@font-face {
+    font-family: 'Morne'; /*a name to be used later*/
+    src: url('/assets/fonts/morne.ttf'); /*URL to font*/
+}
+
+body {
+    background: url("assets/svg/bg3.svg") no-repeat center center fixed;
+    background-size: cover;
+    color: #000000;
+    font-family: 'Morne';
+    padding: auto;
+}
+
+.title {  
+    position: relative;
+    margin: auto;
+    width: 90%;
+    padding: 20px;
+}
+
+.flex-container {
+    display: flex;
+    flex-direction: row;
+    padding-bottom: 40px;
+    margin: auto;
+    /* width: 1450px; */
+}
+
+.flex-child {
+    position: relative;
+    width: 1500px;
+} 
+
+h1, .title a {
+    background-color: white;
+    border: 8px solid black;
+    font-size: 80px;
+    margin: 0;
+    text-align: center;
+    display: block;
+    padding: 10px;
+    text-decoration: none;
+    color: black;
+    font-weight: bold;
+}
+
+h1 {
+    margin-left: auto;
+    /* height: 150px; */
+}
+
+.title a {
+    float: left;
+}
+
+h2 {
+    background-color: #b0ff62;
+    border: 8px solid black;
+    font-size: 40px;
+    margin: 0;
+    text-align: center;
+    display: block;
+}
+
+a:hover {
+    background-color: #b0ff62;
+}
+
+.center {
+    margin: auto;
+    position: absolute;
+    width: 100%;
+    top: 50%;
+    -ms-transform: translateY(-50%);
+    transform: translateY(-50%);
+}
+
+.works {
+    width: 90%;
+    border: 8px solid black;
+    text-align: justify;
+    background-color: white;
+    margin-top: 40px;
+    margin: auto;
+    padding: 20px;
+    justify-content: center;
+    align-items: center
+}
+
+.works h1 {
+    font-size: 50px;
+    width: 180px;
+    margin: 0px;
+
+}
+
+.work {
+    padding: 20px;
+    width: 100%;
+}
+
+p {
+    font-family: 'Futura';
+    font-size: 24px;
+}
+
+iframe {
+    width: 100%;
+}
