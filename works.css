@@ -29,9 +29,7 @@ body {
 .flex-container {
     display: flex;
     flex-direction: row;
-    padding-bottom: 40px;
     margin: auto;
-    /* width: 1450px; */
 }
 
 .flex-child {
